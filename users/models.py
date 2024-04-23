@@ -17,7 +17,7 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
 
     USERNAME_FIELD = 'email'  # Использование email в качестве основного идентификатора для входа.
-    REQUIRED_FIELDS = ['username'] # Указание username как обязательного поля при регистрации.
+    REQUIRED_FIELDS = ['username']  # Указание username как обязательного поля при регистрации.
 
 
 class Payment(models.Model):

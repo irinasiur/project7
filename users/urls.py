@@ -10,4 +10,4 @@ urlpatterns = [
     # URL для создания нового платежа. Этот маршрут обращается к представлению, которое обрабатывает создание нового
     # платежа.
     path('payments/create/', PaymentCreateAPIView.as_view(), name='payment-create'),
-    ]
+]

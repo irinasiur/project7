@@ -8,6 +8,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
     Автоматически сериализует все поля модели.
     """
+
     class Meta:
         model = Lesson
         fields = '__all__'  # Экспортирует все поля модели
@@ -19,6 +20,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     Автоматически сериализует все поля модели.
     """
+
     class Meta:
         model = Course
         fields = '__all__'  # Экспортирует все поля модели
@@ -39,7 +41,8 @@ class CourseDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'title', 'preview', 'description', 'lessons_count', 'lessons']  # Добавляем поле 'lessons' в fields
+        fields = ['id', 'title', 'preview', 'description', 'lessons_count',
+                  'lessons']  # Добавляем поле 'lessons' в fields
 
     def get_lessons_count(self, obj):
         """
@@ -52,8 +55,3 @@ class CourseDetailSerializer(serializers.ModelSerializer):
             int: Количество уроков, связанных с курсом.
         """
         return obj.lessons.all().count()
-
-
-
-
-

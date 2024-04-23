@@ -59,4 +59,3 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     Представление для удаления экземпляра урока.
     """
     queryset = Lesson.objects.all()
-

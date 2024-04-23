@@ -23,5 +23,3 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = '__all__'  # Включите все поля модели
         extra_fields = ['user_full_name']
-
-

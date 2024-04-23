@@ -1,14 +1,12 @@
-from django.urls import path, include
-
-from materials.apps import MaterialsConfig
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 
+from materials.apps import MaterialsConfig
 from materials.views import CourseViewSet, LessonCreateAPIView, LessonListAPIView, \
     LessonRetrieveAPIView, LessonUpdateAPIView, LessonDestroyAPIView
 
 # Название приложения, используемое для обращения к URL внутри Django.
 app_name = MaterialsConfig.name
-
 
 # Создание маршрутизатора для ViewSet курсов.
 router = DefaultRouter()
@@ -28,4 +26,4 @@ urlpatterns = [
     # URL для удаления урока. Использует представление для удаления урока по ID.
     path('lessons/delete/<int:pk>/', LessonDestroyAPIView.as_view(), name='lesson-detail'),
     # Добавление URL-адресов, созданных маршрутизатором, к основным шаблонам URL.
-    ] + router.urls
+] + router.urls
