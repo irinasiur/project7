@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from materials.serializers import CourseSerializer, LessonSerializer
-from .models import Payment  # Убедитесь, что путь к моделям соответствует вашему расположению модели Payment.
+from .models import Payment, User  # Убедитесь, что путь к моделям соответствует вашему расположению модели Payment.
 
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -23,3 +23,14 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = '__all__'  # Включите все поля модели
         extra_fields = ['user_full_name']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password', 'phone', 'city', 'avatar')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user

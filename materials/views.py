@@ -1,6 +1,7 @@
 from rest_framework import viewsets, generics
 
 from materials.models import Course, Lesson
+from materials.permissions import IsModeratorOrReadOnly, IsOwnerOrReadOnly
 from materials.serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer
 
 
@@ -11,6 +12,17 @@ class CourseViewSet(viewsets.ModelViewSet):
     """
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    permission_classes = [IsModeratorOrReadOnly]
+
+    def get_queryset(self):
+        """
+        Получает queryset курсов.
+        Если пользователь аутентифицирован и не является модератором, то возвращает только курсы,
+        принадлежащие этому пользователю, иначе возвращает все курсы.
+        """
+        if self.request.user.is_authenticated and not self.request.user.groups.filter(name='Moderators').exists():
+            return Course.objects.filter(owner=self.request.user)
+        return super().get_queryset()
 
     def get_serializer_class(self):
         """
@@ -28,6 +40,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
     Представление для создания новых экземпляров уроков.
     """
     serializer_class = LessonSerializer
+    permission_classes = [IsOwnerOrReadOnly]
 
 
 class LessonListAPIView(generics.ListAPIView):
@@ -36,6 +49,7 @@ class LessonListAPIView(generics.ListAPIView):
     """
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = [IsOwnerOrReadOnly]
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
@@ -44,6 +58,7 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
     """
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = [IsOwnerOrReadOnly]
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
@@ -52,6 +67,7 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     """
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = [IsOwnerOrReadOnly]
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
@@ -59,3 +75,4 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     Представление для удаления экземпляра урока.
     """
     queryset = Lesson.objects.all()
+    permission_classes = [IsOwnerOrReadOnly]

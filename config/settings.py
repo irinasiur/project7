@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 from decouple import config
 
@@ -26,6 +27,7 @@ INSTALLED_APPS = [
     'users',
     'materials',
     'django_filters',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -99,7 +101,14 @@ AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }

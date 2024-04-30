@@ -1,4 +1,9 @@
+from django.contrib.auth import get_user_model
 from django.db import models
+
+from config import settings
+
+User = get_user_model()
 
 
 # Create your models here.
@@ -14,6 +19,8 @@ class Course(models.Model):
     title = models.CharField(max_length=150, verbose_name='название')
     description = models.TextField(verbose_name='описание')
     preview = models.ImageField(upload_to='course_previews/', null=True, blank=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='courses', on_delete=models.CASCADE,
+                              verbose_name='владелец')
 
     def __str__(self):
         """
@@ -43,6 +50,8 @@ class Lesson(models.Model):
     description = models.TextField()
     preview = models.ImageField(upload_to='lesson_previews/', null=True, blank=True)
     video_url = models.URLField(null=True, blank=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='lessons', on_delete=models.CASCADE,
+                              verbose_name='владелец')
 
     def __str__(self):
         """
