@@ -15,6 +15,7 @@ class User(AbstractUser):
     phone = models.CharField(max_length=15, blank=True)
     city = models.CharField(max_length=100, blank=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    is_moderator = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'  # Использование email в качестве основного идентификатора для входа.
     REQUIRED_FIELDS = ['username']  # Указание username как обязательного поля при регистрации.
