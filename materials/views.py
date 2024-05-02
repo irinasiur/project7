@@ -4,6 +4,7 @@ from materials.models import Course, Lesson
 from materials.permissions import IsModeratorOrReadOnly, UserCanCreateButNotModerator
 from materials.serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer
 
+
 class CourseViewSet(viewsets.ModelViewSet):
     """
     Представление для просмотра и редактирования курсов.
@@ -26,7 +27,8 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            if self.request.user.is_moderator:
+            if self.request.user.groups.filter(name='Moderators').exists():
+                # if self.request.user.is_moderator:
                 return Course.objects.all()
             return Course.objects.filter(owner=self.request.user)
         return Course.objects.none()
@@ -35,6 +37,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             return CourseDetailSerializer
         return CourseSerializer
+
 
 class LessonCreateAPIView(generics.CreateAPIView):
     """
@@ -47,6 +50,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+
 class LessonListAPIView(generics.ListAPIView):
     """
     Представление для просмотра списка уроков.
@@ -57,9 +61,11 @@ class LessonListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            if self.request.user.is_moderator:
+            if self.request.user.groups.filter(name='Moderators').exists():
+                # if self.request.user.is_moderator:
                 return Lesson.objects.all()
             return Lesson.objects.filter(owner=self.request.user)
+
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
     """
@@ -71,9 +77,11 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            if self.request.user.is_moderator:
+            if self.request.user.groups.filter(name='Moderators').exists():
+                # if self.request.user.is_moderator:
                 return Lesson.objects.all()
             return Lesson.objects.filter(owner=self.request.user)
+
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
     """
@@ -85,9 +93,11 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            if self.request.user.is_moderator:
+            if self.request.user.groups.filter(name='Moderators').exists():
+                # if self.request.user.is_moderator:
                 return Lesson.objects.all()
             return Lesson.objects.filter(owner=self.request.user)
+
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
     """
@@ -99,7 +109,7 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            if self.request.user.is_moderator:
-                # Модераторы не могут удалять уроки
-                return Lesson.objects.none()
+            if self.request.user.groups.filter(name='Moderators').exists():
+                # if self.request.user.is_moderator:
+                return Lesson.objects.none()  # Модераторы не могут удалять уроки
             return Lesson.objects.filter(owner=self.request.user)

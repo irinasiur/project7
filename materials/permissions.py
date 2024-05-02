@@ -15,7 +15,8 @@ class IsModeratorOrReadOnly(BasePermission):
         """
         if request.method in SAFE_METHODS:
             return True
-        if request.user.is_moderator and request.method not in ['POST', 'DELETE']:
+        if request.user.groups.filter(name='Moderators').exists() and request.method not in ['POST', 'DELETE']:
+            # if request.user.is_moderator and request.method not in ['POST', 'DELETE']:
             return True
         return False
 
@@ -27,7 +28,9 @@ class IsModeratorOrReadOnly(BasePermission):
         """
         if request.method in SAFE_METHODS:
             return True
-        return obj.owner == request.user or (request.user.is_moderator and request.method not in ['POST', 'DELETE'])
+        return obj.owner == request.user or (
+            request.user.groups.filter(name='Moderators').exists() and request.method not in ['POST', 'DELETE'])
+        # return obj.owner == request.user or (request.user.is_moderator and request.method not in ['POST', 'DELETE'])
 
 
 class UserCanCreateButNotModerator(BasePermission):
@@ -40,12 +43,16 @@ class UserCanCreateButNotModerator(BasePermission):
         if request.method in SAFE_METHODS:
             return True
         if request.method == "POST":
-            return request.user.is_authenticated and not request.user.is_moderator
+            return request.user.is_authenticated and not request.user.groups.filter(name='Moderators').exists()
+            # return request.user.is_authenticated and not request.user.is_moderator
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
         if request.method == "POST":
-            return request.user.is_authenticated and not request.user.is_moderator
-        return obj.owner == request.user or (request.user.is_moderator and request.method not in ['POST', 'DELETE'])
+            return request.user.is_authenticated and not request.user.groups.filter(name='Moderators').exists()
+        return obj.owner == request.user or (
+            request.user.groups.filter(name='Moderators').exists() and request.method not in ['POST', 'DELETE'])
+        #     return request.user.is_authenticated and not request.user.is_moderator
+        # return obj.owner == request.user or (request.user.is_moderator and request.method not in ['POST', 'DELETE'])
