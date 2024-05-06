@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from materials.models import Course, Lesson
+from materials.models import Course, Lesson, CourseSubscription
+from materials.validators import validate_video_url
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -7,6 +8,8 @@ class LessonSerializer(serializers.ModelSerializer):
     Сериализатор для модели урока (Lesson).
     Автоматически сериализует все поля модели.
     """
+    video_url = serializers.URLField(validators=[validate_video_url])
+
     class Meta:
         model = Lesson
         fields = '__all__'  # Экспортирует все поля модели
@@ -18,6 +21,7 @@ class CourseSerializer(serializers.ModelSerializer):
     Сериализатор для модели курса (Course).
     Автоматически сериализует все поля модели.
     """
+
     class Meta:
         model = Course
         fields = '__all__'  # Экспортирует все поля модели
@@ -29,16 +33,16 @@ class CourseDetailSerializer(serializers.ModelSerializer):
     Сериализатор для подробного представления курса (Course).
     Включает количество уроков и подробную информацию о каждом уроке.
     Атрибуты:
-        lessons_count (int): Поле для подсчета количества уроков в курсе.
+        is_subscribed (int): Поле для подсчета количества уроков в курсе.
         lessons (LessonSerializer): Сериализатор для уроков, связанных с курсом.
     """
-    lessons_count = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
     lessons = LessonSerializer(many=True, read_only=True)  # Добавляем сериализатор уроков
 
     class Meta:
         model = Course
-        fields = ['id', 'title', 'preview', 'description', 'lessons_count',
-                  'lessons']  # Добавляем поле 'lessons' в fields
+        fields = ['id', 'title', 'preview', 'description', 'lessons',
+                  'is_subscribed']  # Добавляем поле 'lessons' в fields
 
     def get_lessons_count(self, obj):
         """
@@ -49,3 +53,29 @@ class CourseDetailSerializer(serializers.ModelSerializer):
             int: Количество уроков, связанных с курсом.
         """
         return obj.lessons.all().count()
+
+    def get_is_subscribed(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return CourseSubscription.objects.filter(user=user, course=obj).exists()
+        return False
+
+
+class CourseSubscriptionSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели подписки на курс.
+
+    Атрибуты:
+        model (CourseSubscription): Модель подписки на курс.
+        fields (list): Поля модели, которые будут сериализованы.
+    """
+    class Meta:
+        """
+        Метакласс, определяющий метаданные для сериализатора.
+
+        Атрибуты:
+            model (CourseSubscription): Модель, которая будет использоваться для сериализации.
+            fields (list): Поля модели, которые будут сериализованы.
+        """
+        model = CourseSubscription
+        fields = ['id', 'user', 'course']

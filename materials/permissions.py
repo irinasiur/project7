@@ -15,10 +15,9 @@ class IsModeratorOrReadOnly(BasePermission):
         """
         if request.method in SAFE_METHODS:
             return True
-        if request.user.groups.filter(name='Moderators').exists() and request.method not in ['POST', 'DELETE']:
-            # if request.user.is_moderator and request.method not in ['POST', 'DELETE']:
-            return True
-        return False
+        if request.user.groups.filter(name='Moderators').exists():
+            return False  # Модераторы не могут создавать или удалять курсы и уроки
+        return True
 
     def has_object_permission(self, request, view, obj):
         """
@@ -30,7 +29,6 @@ class IsModeratorOrReadOnly(BasePermission):
             return True
         return obj.owner == request.user or (
             request.user.groups.filter(name='Moderators').exists() and request.method not in ['POST', 'DELETE'])
-        # return obj.owner == request.user or (request.user.is_moderator and request.method not in ['POST', 'DELETE'])
 
 
 class UserCanCreateButNotModerator(BasePermission):
@@ -40,19 +38,40 @@ class UserCanCreateButNotModerator(BasePermission):
     """
 
     def has_permission(self, request, view):
+        """
+        Проверяет разрешение на выполнение операции над списком объектов.
+
+        Args:
+            request (HttpRequest): HTTP-запрос.
+            view (APIView): Представление, в котором применяется разрешение.
+
+        Returns:
+            bool: True, если разрешение разрешает операцию, в противном случае False.
+        """
         if request.method in SAFE_METHODS:
             return True
         if request.method == "POST":
+            # Пользователь должен быть аутентифицирован и не должен быть в группе "Модераторы"
             return request.user.is_authenticated and not request.user.groups.filter(name='Moderators').exists()
-            # return request.user.is_authenticated and not request.user.is_moderator
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
+        """
+        Проверяет разрешение на выполнение операции над конкретным объектом.
+
+        Args:
+            request (HttpRequest): HTTP-запрос.
+            view (APIView): Представление, в котором применяется разрешение.
+            obj: Объект, над которым проверяется разрешение.
+
+        Returns:
+            bool: True, если разрешение разрешает операцию, в противном случае False.
+        """
         if request.method in SAFE_METHODS:
             return True
         if request.method == "POST":
+            # Пользователь должен быть аутентифицирован и не должен быть в группе "Модераторы"
             return request.user.is_authenticated and not request.user.groups.filter(name='Moderators').exists()
+        # Пользователь должен быть владельцем объекта или быть модератором и не выполнять POST или DELETE
         return obj.owner == request.user or (
             request.user.groups.filter(name='Moderators').exists() and request.method not in ['POST', 'DELETE'])
-        #     return request.user.is_authenticated and not request.user.is_moderator
-        # return obj.owner == request.user or (request.user.is_moderator and request.method not in ['POST', 'DELETE'])

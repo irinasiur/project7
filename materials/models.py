@@ -62,3 +62,35 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = 'урок'
         verbose_name_plural = 'уроки'
+
+
+class CourseSubscription(models.Model):
+    """
+    Модель подписки пользователя на курс.
+
+    Поля:
+        user (ForeignKey): Пользователь, который подписывается на курс.
+        course (ForeignKey): Курс, на который пользователь подписывается.
+
+    Метаданные:
+        unique_together (tuple): Гарантирует уникальность комбинации пользователя и курса.
+        verbose_name (str): Название в единственном числе для отображения в админке.
+        verbose_name_plural (str): Название во множественном числе для отображения в админке.
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='course_subscriptions')
+    course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='subscribers')
+
+    class Meta:
+        unique_together = ('user', 'course')  # Гарантирует уникальность комбинации пользователя и курса
+        verbose_name = 'подписка на курс'
+        verbose_name_plural = 'подписки на курсы'
+
+    def __str__(self):
+        """
+        Возвращает строковое представление объекта подписки на курс.
+
+        Returns:
+            str: Строковое представление объекта подписки на курс в формате "Имя пользователя - Название курса".
+        """
+        return f"{self.user.username} - {self.course.title}"
