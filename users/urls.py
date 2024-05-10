@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .apps import UsersConfig
-from .views import PaymentListAPIView, PaymentCreateAPIView, UserViewSet
+from .views import PaymentListAPIView, PaymentCreateAPIView, UserViewSet, CreatePaymentSession
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 app_name = UsersConfig.name
@@ -22,4 +22,6 @@ urlpatterns = [
     path('login/', TokenObtainPairView.as_view(), name='login'),
     # URL для обновления JWT токена
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # Добавлен новый URL для инициации платежей через Stripe
+    path('api/payment/', CreatePaymentSession.as_view(), name='create-payment-session'),
 ]

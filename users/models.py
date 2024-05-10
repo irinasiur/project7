@@ -32,6 +32,7 @@ class Payment(models.Model):
     paid_lesson = models.ForeignKey('materials.Lesson', on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=100, choices=(('cash', 'Cash'), ('transfer', 'Bank Transfer')))
+    stripe_session_url = models.URLField(max_length=200, blank=True, null=True)
 
     class Meta:
         verbose_name = 'платеж'
