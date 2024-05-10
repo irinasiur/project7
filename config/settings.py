@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework_simplejwt',
     'drf_yasg',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -92,6 +93,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = config('TIME_ZONE')
+CELERY_TIMEZONE = config('CELERY_TIMEZONE')
 
 USE_I18N = True
 USE_TZ = True
@@ -141,3 +143,25 @@ LOGGING = {
     },
 }
 
+CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+# Redis and Celery
+REDIS_HOST = config('REDIS_HOST', 'localhost')
+REDIS_PORT = config('REDIS_PORT', '6379')
+REDIS_DB = config('REDIS_DB', '0')
+REDIS_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+
+CELERY_BROKER_URL = config('CELERY_BROKER_URL', REDIS_URL)
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

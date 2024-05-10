@@ -7,6 +7,7 @@ from materials.models import Course, Lesson, CourseSubscription
 from materials.paginators import StandardResultsSetPagination
 from materials.permissions import IsModeratorOrReadOnly, UserCanCreateButNotModerator
 from materials.serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer
+from materials.tasks import send_update_email
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -41,6 +42,10 @@ class CourseViewSet(viewsets.ModelViewSet):
         - serializer (CourseSerializer): Сериализатор, используемый для создания курса.
         """
         serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save()
+        send_update_email.delay(serializer.instance.id)  # Асинхронный вызов задачи Celery для отправки писем
 
     def get_queryset(self):
         """
