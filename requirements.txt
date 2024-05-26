@@ -28,4 +28,8 @@ charset-normalizer==3.3.2
 idna==3.7
 urllib3==2.2.1
 celery==5.4.0
-django-celery-beat==2.4.0
+django-celery-beat
+pip~=22.0.2
+wheel~=0.43.0
+setuptools~=59.6.0
+redis
