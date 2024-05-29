@@ -6,20 +6,21 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Создаем виртуальное окружение, активируем его и устанавливаем зависимости
-RUN python -m venv env && \
-    /app/env/bin/pip install --upgrade pip && \
-    /app/env/bin/pip install -r requirements.txt --no-cache-dir
+# RUN python -m venv env && \
+#     /app/env/bin/pip install --upgrade pip && \
+#     /app/env/bin/pip install -r requirements.txt --no-cache-dir
+RUN pip install -r requirements.txt
 
 # Копируем все файлы проекта в рабочую директорию контейнера
 COPY . .
 
 # Устанавливаем переменные окружения для использования виртуального окружения
-ENV PATH="/app/env/bin:$PATH"
-ENV VIRTUAL_ENV="/app/env"
+# ENV PATH="/app/env/bin:$PATH"
+# ENV VIRTUAL_ENV="/app/env"
 
 # Указываем команду для запуска приложения
-CMD ["sh", "/app/entrypoint.sh"]
-
+#CMD ["sh", "/app/entrypoint.sh"]
+CMD [sh, /app/entrypoint.sh]
 
 
 # # Use an official Python runtime as a parent image
